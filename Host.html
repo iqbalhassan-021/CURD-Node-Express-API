@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Request Example</title>
+  <style>
+    #itemsList {
+      list-style-type: none;
+    }
+    #itemsList li {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <button onclick="loadItems()">Get</button>
+  <button onclick="createItem()">Post</button>
+  <button>Delete</button>
+  <button>Put</button>
+
+  <ul id="itemsList"></ul>
+
+  <script>
+    async function loadItems() {
+      try {
+        console.log('Loading items...');
+        const response = await fetch('http://localhost:3000/api/items', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Items loaded:', data);
+        displayItems(data);
+      } catch (error) {
+        console.error('Error loading items:', error);
+      }
+    }
+
+    function displayItems(items) {
+      console.log('Displaying items:', items);
+      const itemsList = document.getElementById('itemsList');
+      itemsList.innerHTML = '';
+      items.forEach(item => {
+        const listItem = document.createElement('li');
+        listItem.textContent = item.name;
+        itemsList.appendChild(listItem);
+      });
+    }
+
+    async function createItem() {
+      try {
+        console.log('Creating item...');
+        const response = await fetch('http://localhost:3000/api/items', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name: 'New Item' })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Item created:', data);
+        loadItems(); // Reload items after creating a new one
+      } catch (error) {
+        console.error('Error creating item:', error);
+      }
+    }
+  </script>
+</body>
+</html>
