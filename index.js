@@ -80,6 +80,25 @@ app.post('/api/users', (req, res) => {
   });
 });
 
+// Replace the user with :id
+app.put('/api/users/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const newUser = req.body;
+  const userIndex = users.findIndex(user => user.id === id);
+
+  if (userIndex !== -1) {
+    users[userIndex] = { ...newUser, id };
+    fs.writeFile("./Users.json", JSON.stringify(users), (err) => {
+      if (err) {
+        return res.status(500).json({ status: "Error", message: "Failed to replace user" });
+      }
+      return res.json({ status: "Success", user: users[userIndex] });
+    });
+  } else {
+    return res.status(404).json({ status: "Error", message: "User not found" });
+  }
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
