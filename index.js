@@ -31,21 +31,30 @@ app.get('/api/users/:id', (req, res) => {
   return res.json(user);
 });
 
-//Edit the user with :id
+// Edit the user with :id
 app.patch('/api/users/:id', (req, res) => {
   const id = Number(req.params.id);
   const updatedData = req.body;
   let user = users.find(user => user.id === id);
 
   if (user) {
+    console.log("User found:", user);
+    console.log("Updated data:", updatedData);
+
     Object.assign(user, updatedData);
-    fs.writeFile("./Users.json", JSON.stringify(users), (err) => {
+
+    console.log("Updated user:", user);
+
+    fs.writeFile("./Users.json", JSON.stringify(users, null, 2), (err) => {
       if (err) {
+        console.error("Failed to write to file:", err);
         return res.status(500).json({ status: "Error", message: "Failed to update user" });
       }
+      console.log("Successfully updated user in Users.json");
       return res.json({ status: "Success", user });
     });
   } else {
+    console.error("User not found with ID:", id);
     return res.status(404).json({ status: "Error", message: "User not found" });
   }
 });
